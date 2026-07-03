@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import PoseOverlay from "@/components/sentinel/PoseOverlay";
 import StatusDot from "@/components/sentinel/StatusDot";
@@ -22,6 +22,8 @@ export default function SentinelContent() {
   const secret = searchParams.get("secret") || "";
   const deviceName = searchParams.get("name") || "Home";
   const language = (searchParams.get("lang") === "ta" ? "ta" : "en") as "en" | "ta";
+  const isDemo = deviceId === "demo-device" || secret === "" || secret === "demo";
+  const [showDemoInfo, setShowDemoInfo] = useState(true);
 
   const monitor = useSentinelMonitor(
     deviceId,
@@ -46,6 +48,42 @@ export default function SentinelContent() {
         muted
         className="absolute inset-0 h-full w-full object-cover"
       />
+
+      {/* Demo mode info overlay */}
+      {isDemo && showDemoInfo && (monitor.state === MonitoringState.MONITORING || monitor.state === MonitoringState.IDLE) && (
+        <div className="absolute inset-x-0 bottom-0 z-30 bg-gradient-to-t from-black/90 via-black/70 to-transparent pb-6 pt-16 px-4 pointer-events-none">
+          <div className="pointer-events-auto mx-auto max-w-sm rounded-xl border border-orange-500/30 bg-gradient-to-br from-orange-900/80 to-teal-900/80 p-4 text-center backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12" y2="16" strokeWidth="3" />
+              </svg>
+              <span className="text-sm font-bold text-yellow-300">Pose Preview</span>
+            </div>
+            <p className="text-xs text-orange-100 leading-relaxed">
+              The <strong className="text-yellow-200">green skeleton</strong> is MoveNet AI tracking your body joints in real time. Everything runs on-device — no video leaves your phone.
+            </p>
+            <p className="mt-2 text-xs text-orange-200 leading-relaxed">
+              <strong className="text-yellow-200">Full detection + SMS alerts</strong> require completing the setup wizard. This preview shows the tracking only.
+            </p>
+            <div className="mt-3 flex gap-2 justify-center">
+              <a
+                href="/setup"
+                className="inline-block rounded-lg bg-gradient-to-r from-orange-600 to-orange-500 px-4 py-1.5 text-xs font-bold text-white hover:from-orange-700 hover:to-orange-600 transition-all"
+              >
+                Full Setup
+              </a>
+              <button
+                onClick={() => setShowDemoInfo(false)}
+                className="inline-block rounded-lg border border-white/20 px-4 py-1.5 text-xs text-white/70 hover:bg-white/10 transition-all"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <PoseOverlay
         keypoints={monitor.poseDetection.keypoints}

@@ -60,9 +60,7 @@ export default function Home() {
             FallGuard
           </h1>
           <p className="mt-3 max-w-xl text-base text-orange-100 sm:text-lg">
-            <span className="font-heading font-semibold">AI-powered fall detection</span> for
-            elderly loved ones living alone. Turns any old Android phone into a
-            lifesaving monitor.
+            <span className="font-heading font-semibold">AI-powered fall detection</span> for elderly loved ones living alone. Turns any old Android phone into a lifesaving monitor.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-orange-200">
             <span className="inline-flex items-center gap-1.5">
@@ -179,8 +177,7 @@ export default function Home() {
               </div>
               <h3 className="font-heading mt-4 font-semibold text-gray-900">Setup</h3>
               <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-                Place an old Android phone on a shelf. Complete our 5-step setup wizard &mdash; add
-                emergency contacts and set a language.
+                Place an old Android phone on a shelf. Complete our 5-step setup wizard &mdash; add emergency contacts and set a language.
               </p>
             </div>
             <div className="group relative overflow-hidden rounded-xl border border-teal-100 bg-white p-5 text-center transition hover:border-teal-200 hover:shadow-md hover:shadow-teal-100/50">
@@ -190,8 +187,7 @@ export default function Home() {
               </div>
               <h3 className="font-heading mt-4 font-semibold text-gray-900">Monitor</h3>
               <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-                The phone watches the room using AI pose detection. If it suspects a fall, it
-                confirms via Gemini before alerting.
+                The phone watches the room using AI pose detection. If it suspects a fall, it confirms via Gemini before alerting.
               </p>
             </div>
             <div className="group relative overflow-hidden rounded-xl border border-orange-100 bg-white p-5 text-center transition hover:border-orange-200 hover:shadow-md hover:shadow-orange-100/50">
@@ -201,8 +197,7 @@ export default function Home() {
               </div>
               <h3 className="font-heading mt-4 font-semibold text-gray-900">Alert</h3>
               <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-                A 30-second countdown appears. If okay, tap &ldquo;I&rsquo;M OK&rdquo;. Otherwise, SMS and
-                WhatsApp alerts fire to family and hospital.
+                A 30-second countdown appears. If okay, tap &ldquo;I&rsquo;M OK&rdquo;. Otherwise, SMS and WhatsApp alerts fire to family and hospital.
               </p>
             </div>
           </div>
@@ -235,15 +230,10 @@ export default function Home() {
             </div>
             <div className="space-y-4 rounded-xl border border-orange-100 bg-white p-6 text-base text-gray-600 sm:flex-1">
               <p>
-                In India, <strong className="text-orange-700">~3 million elderly</strong> fall at
-                home every year. ~40% cannot get up without help. The &ldquo;golden
-                hour&rdquo; after a fall is critical, but medical alert devices cost
-                <strong className="text-teal-700"> ₹15,000–₹50,000</strong>.
+                In India, <strong className="text-orange-700">~3 million elderly</strong> fall at home every year. ~40% cannot get up without help. The &ldquo;golden hour&rdquo; after a fall is critical, but medical alert devices cost <strong className="text-teal-700">₹15,000–₹50,000</strong>.
               </p>
               <p>
-                FallGuard uses an old Android phone you already own, requires
-                <strong className="text-orange-700"> zero interaction</strong> from the elderly person,
-                and <strong className="text-teal-700">costs nothing</strong> to run.
+                FallGuard uses an old Android phone you already own, requires <strong className="text-orange-700">zero interaction</strong> from the elderly person, and <strong className="text-teal-700">costs nothing</strong> to run.
               </p>
             </div>
           </div>
@@ -262,9 +252,7 @@ export default function Home() {
             </div>
             <h3 className="font-heading text-lg font-bold text-teal-900">Privacy First</h3>
             <p className="mt-2 text-sm text-teal-700">
-              All video processing happens on the device. No video is streamed, recorded, or stored
-              in the cloud. Only a single low-resolution snapshot is sent to Gemini during a
-              suspected fall, and it is never saved.
+              All video processing happens on the device. No video is streamed, recorded, or stored in the cloud. Only a single low-resolution snapshot is sent to Gemini during a suspected fall, and it is never saved.
             </p>
           </div>
         </div>

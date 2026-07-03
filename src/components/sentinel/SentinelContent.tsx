@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import PoseOverlay from "@/components/sentinel/PoseOverlay";
 import StatusDot from "@/components/sentinel/StatusDot";
@@ -12,6 +12,7 @@ import { info } from "@/lib/logger";
 
 export default function SentinelContent() {
   const searchParams = useSearchParams();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     info("Sentinel page loaded");
@@ -30,21 +31,21 @@ export default function SentinelContent() {
     { lat: 0, lng: 0, address: "" }
   );
 
+  useEffect(() => {
+    if (videoRef.current && monitor.camera.stream) {
+      videoRef.current.srcObject = monitor.camera.stream;
+    }
+  }, [monitor.camera.stream]);
+
   return (
-    <div className="relative h-full w-full overflow-hidden bg-black">
-      {monitor.camera.stream && (
-        <video
-          autoPlay
-          playsInline
-          muted
-          ref={(el) => {
-            if (el && monitor.camera.stream) {
-              el.srcObject = monitor.camera.stream;
-            }
-          }}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      )}
+    <div className="relative h-dvh w-full overflow-hidden bg-black">
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        className="absolute inset-0 h-full w-full object-cover"
+      />
 
       <PoseOverlay
         keypoints={monitor.poseDetection.keypoints}

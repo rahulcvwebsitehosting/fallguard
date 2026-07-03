@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { LanguageProvider, useLanguage } from "@/hooks/useLanguage";
 import { translations } from "@/lib/i18n";
@@ -12,11 +12,21 @@ import TestStep from "@/components/setup/TestStep";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
+const SETUP_STORAGE_KEY = "fallguard-setup";
+
 interface SetupData {
   nickname: string;
   contacts: { name: string; phone: string; relationship: string; isHospital: boolean }[];
   hospitalPhone: string;
   language: "en" | "ta";
+}
+
+interface SavedState {
+  step: number;
+  data: SetupData;
+  deviceId: string | null;
+  secret: string | null;
+  pin: string | null;
 }
 
 const TOTAL_STEPS = 5;
@@ -36,9 +46,50 @@ function SetupContent() {
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
   const [pin, setPin] = useState<string | null>(null);
+  const [restored, setRestored] = useState(false);
+
+  // Restore from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SETUP_STORAGE_KEY);
+      if (saved) {
+        const parsed: SavedState = JSON.parse(saved);
+        setStep(parsed.step);
+        setData(parsed.data);
+        if (parsed.deviceId) setDeviceId(parsed.deviceId);
+        if (parsed.secret) setSecret(parsed.secret);
+        if (parsed.pin) setPin(parsed.pin);
+        if (parsed.data.language) setLanguage(parsed.data.language as "en" | "ta");
+      }
+    } catch { /* ignore */ }
+    setRestored(true);
+  }, [setLanguage]);
+
+  // Persist to localStorage on every change
+  const persist = useCallback((s: number, d: SetupData, did: string | null, sec: string | null, p: string | null) => {
+    try {
+      localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify({ step: s, data: d, deviceId: did, secret: sec, pin: p }));
+    } catch { /* ignore */ }
+  }, []);
+
+  const setStepAndPersist = (s: number) => {
+    setStep(s);
+    persist(s, data, deviceId, secret, pin);
+  };
 
   const updateData = (partial: Partial<SetupData>) => {
-    setData((prev) => ({ ...prev, ...partial }));
+    setData((prev) => {
+      const next = { ...prev, ...partial };
+      persist(step, next, deviceId, secret, pin);
+      return next;
+    });
+  };
+
+  const setDeviceIdAndPersist = (did: string | null, sec: string | null, p: string | null) => {
+    setDeviceId(did);
+    setSecret(sec);
+    setPin(p);
+    persist(step, data, did, sec, p);
   };
 
   const canNext = () => {
@@ -81,87 +132,97 @@ function SetupContent() {
       </div>
 
       {/* Step Hint */}
-      <div className="border-b border-orange-100 bg-gradient-to-r from-orange-50 to-teal-50 px-4 py-2 text-xs text-orange-700">
-        {step === 1 && (language === "ta" ? "உங்கள் சாதனத்திற்கு ஒரு பெயர் கொடுங்கள். இது குடும்ப டாஷ்போர்டில் காண்பிக்கப்படும்." : "Give your device a name. This will show on the family dashboard so you can identify which room this monitor covers.")}
-        {step === 2 && (language === "ta" ? "அவசர தொடர்புகளைச் சேர்க்கவும். வீழ்ச்சி கண்டறியப்பட்டால் இவர்களுக்கு SMS மற்றும் WhatsApp மூலம் எச்சரிக்கை அனுப்பப்படும்." : "Add emergency contacts. These people will receive SMS and WhatsApp alerts when a fall is detected.")}
-        {step === 3 && (language === "ta" ? "அருகிலுள்ள மருத்துவமனையின் தொலைபேசி எண்ணைச் சேர்க்கவும். இது அவசர அழைப்பு பொத்தானுக்கு பயன்படும்." : "Add a hospital phone number. This will power the one-tap emergency call button on the dashboard.")}
-        {step === 4 && (language === "ta" ? "உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும். எச்சரிக்கைகள் மற்றும் குரல் அறிவிப்புகள் இந்த மொழியில் இருக்கும்." : "Choose your preferred language. Alerts and voice announcements will use this language.")}
-        {step === 5 && (language === "ta" ? "எல்லாம் சரியாக வேலை செய்கிறதா என்று சோதிக்க ஒரு சோதனை எச்சரிக்கையை அனுப்பவும். பின்னர் கண்காணிப்பைத் தொடங்கவும்." : "Send a test alert to confirm everything works. Then start monitoring.")}
-      </div>
+      {!restored && (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-sm text-gray-400">Restoring progress...</p>
+        </div>
+      )}
 
-      <div className="flex-1 px-4 py-6">
-        {step === 1 && (
-          <NicknameStep
-            value={data.nickname}
-            onChange={(v) => updateData({ nickname: v })}
-            language={language}
-          />
-        )}
-        {step === 2 && (
-          <ContactsStep
-            contacts={data.contacts}
-            onChange={(contacts) => updateData({ contacts })}
-            language={language}
-          />
-        )}
-        {step === 3 && (
-          <HospitalStep
-            value={data.hospitalPhone}
-            onChange={(v) => updateData({ hospitalPhone: v })}
-            language={language}
-          />
-        )}
-        {step === 4 && (
-          <LanguageStep
-            value={data.language}
-            onChange={(lang) => {
-              updateData({ language: lang });
-              setLanguage(lang);
-            }}
-            language={language}
-          />
-        )}
-        {step === 5 && (
-          <TestStep
-            setupData={data}
-            language={language}
-            onComplete={(did, sec, p) => {
-              setDeviceId(did);
-              setSecret(sec);
-              setPin(p);
-              updateData({ language: data.language });
-            }}
-          />
-        )}
-      </div>
+      {restored && (<>
+        <div className="border-b border-orange-100 bg-gradient-to-r from-orange-50 to-teal-50 px-4 py-2 text-xs text-orange-700">
+          {step === 1 && (language === "ta" ? "உங்கள் சாதனத்திற்கு ஒரு பெயர் கொடுங்கள். இது குடும்ப டாஷ்போர்டில் காண்பிக்கப்படும்." : "Give your device a name. This will show on the family dashboard so you can identify which room this monitor covers.")}
+          {step === 2 && (language === "ta" ? "அவசர தொடர்புகளைச் சேர்க்கவும். வீழ்ச்சி கண்டறியப்பட்டால் இவர்களுக்கு SMS மற்றும் WhatsApp மூலம் எச்சரிக்கை அனுப்பப்படும்." : "Add emergency contacts. These people will receive SMS and WhatsApp alerts when a fall is detected.")}
+          {step === 3 && (language === "ta" ? "அருகிலுள்ள மருத்துவமனையின் தொலைபேசி எண்ணைச் சேர்க்கவும். இது அவசர அழைப்பு பொத்தானுக்கு பயன்படும்." : "Add a hospital phone number. This will power the one-tap emergency call button on the dashboard.")}
+          {step === 4 && (language === "ta" ? "உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும். எச்சரிக்கைகள் மற்றும் குரல் அறிவிப்புகள் இந்த மொழியில் இருக்கும்." : "Choose your preferred language. Alerts and voice announcements will use this language.")}
+          {step === 5 && (language === "ta" ? "எல்லாம் சரியாக வேலை செய்கிறதா என்று சோதிக்க ஒரு சோதனை எச்சரிக்கையை அனுப்பவும். பின்னர் கண்காணிப்பைத் தொடங்கவும்." : "Send a test alert to confirm everything works. Then start monitoring.")}
+        </div>
 
-      <div className="sticky bottom-0 border-t border-orange-100 bg-white px-4 py-3 flex gap-3">
-        {step > 1 && (
-          <Button variant="outline" onClick={() => setStep(step - 1)}>
-            {language === "ta" ? "பின்" : "Back"}
-          </Button>
-        )}
-        <div className="flex-1" />
-        {step < TOTAL_STEPS && (
-          <Button
-            className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600"
-            disabled={!canNext()}
-            onClick={() => setStep(step + 1)}
-          >
-            {language === "ta" ? "அடுத்து" : "Next"}
-          </Button>
-        )}
-        {step === TOTAL_STEPS && deviceId && secret && (
-          <Button
-            className="bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600"
-            onClick={() => {
-              router.push(`/sentinel?deviceId=${deviceId}&secret=${secret}&name=${encodeURIComponent(data.nickname)}&lang=${data.language}`);
-            }}
-          >
-            {t.startMonitoring}
-          </Button>
-        )}
-      </div>
+        <div className="flex-1 px-4 py-6">
+          {step === 1 && (
+            <NicknameStep
+              value={data.nickname}
+              onChange={(v) => updateData({ nickname: v })}
+              language={language}
+            />
+          )}
+          {step === 2 && (
+            <ContactsStep
+              contacts={data.contacts}
+              onChange={(contacts) => updateData({ contacts })}
+              language={language}
+            />
+          )}
+          {step === 3 && (
+            <HospitalStep
+              value={data.hospitalPhone}
+              onChange={(v) => updateData({ hospitalPhone: v })}
+              language={language}
+            />
+          )}
+          {step === 4 && (
+            <LanguageStep
+              value={data.language}
+              onChange={(lang) => {
+                updateData({ language: lang });
+                setLanguage(lang);
+              }}
+              language={language}
+            />
+          )}
+          {step === 5 && (
+            <TestStep
+              setupData={data}
+              language={language}
+              existingDeviceId={deviceId}
+              existingSecret={secret}
+              existingPin={pin}
+              onComplete={(did, sec, p) => {
+                setDeviceIdAndPersist(did, sec, p);
+                persist(step, data, did, sec, p);
+              }}
+            />
+          )}
+        </div>
+
+        <div className="sticky bottom-0 border-t border-orange-100 bg-white px-4 py-3 flex gap-3">
+          {step > 1 && (
+            <Button variant="outline" onClick={() => setStepAndPersist(step - 1)}>
+              {language === "ta" ? "பின்" : "Back"}
+            </Button>
+          )}
+          <div className="flex-1" />
+          {step < TOTAL_STEPS && (
+            <Button
+              className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600"
+              disabled={!canNext()}
+              onClick={() => setStepAndPersist(step + 1)}
+            >
+              {language === "ta" ? "அடுத்து" : "Next"}
+            </Button>
+          )}
+          {step === TOTAL_STEPS && deviceId && secret && (
+            <Button
+              className="bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600"
+              onClick={() => {
+                localStorage.removeItem(SETUP_STORAGE_KEY);
+                router.push(`/sentinel?deviceId=${deviceId}&secret=${secret}&name=${encodeURIComponent(data.nickname)}&lang=${data.language}`);
+              }}
+            >
+              {t.startMonitoring}
+            </Button>
+          )}
+        </div>
+      </>)}
     </div>
   );
 }

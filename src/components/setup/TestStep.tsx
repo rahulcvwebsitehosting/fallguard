@@ -18,17 +18,28 @@ interface TestStepProps {
     language: "en" | "ta";
   };
   language: "en" | "ta";
+  existingDeviceId?: string | null;
+  existingSecret?: string | null;
+  existingPin?: string | null;
   onComplete: (deviceId: string, secret: string, pin: string) => void;
 }
 
-export default function TestStep({ setupData, language, onComplete }: TestStepProps) {
+export default function TestStep({ setupData, language, existingDeviceId, existingSecret, existingPin, onComplete }: TestStepProps) {
   const t = translations[language].setup;
   const [status, setStatus] = useState<"idle" | "registering" | "testing" | "done" | "error">("idle");
-  const [deviceId, setDeviceId] = useState<string | null>(null);
-  const [secret, setSecret] = useState<string | null>(null);
-  const [pin, setPin] = useState<string | null>(null);
+  const [deviceId, setDeviceId] = useState<string | null>(existingDeviceId || null);
+  const [secret, setSecret] = useState<string | null>(existingSecret || null);
+  const [pin, setPin] = useState<string | null>(existingPin || null);
   const [errorMsg, setErrorMsg] = useState("");
   const [showPin, setShowPin] = useState(false);
+
+  useEffect(() => {
+    if (existingDeviceId && existingSecret && existingPin) {
+      setDeviceId(existingDeviceId);
+      setSecret(existingSecret);
+      setPin(existingPin);
+    }
+  }, [existingDeviceId, existingSecret, existingPin]);
 
   const registerDevice = async () => {
     try {
@@ -39,7 +50,8 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
         body: JSON.stringify({}),
       });
       if (!res.ok) {
-        throw new Error("Registration failed");
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(errBody.error || `Registration failed (HTTP ${res.status})`);
       }
       const data = await res.json();
       setDeviceId(data.deviceId);
@@ -55,7 +67,7 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
       await storeDeviceConfig("nickname", setupData.nickname);
       await storeDeviceConfig("language", setupData.language);
 
-      await fetch("/api/v1/device", {
+      const configRes = await fetch("/api/v1/device", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -68,9 +80,10 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
           pin: generatedPin,
         }),
       });
+      if (!configRes.ok) throw new Error("Failed to save device config");
 
       for (const contact of setupData.contacts) {
-        await fetch("/api/v1/contacts", {
+        const cRes = await fetch("/api/v1/contacts", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -79,10 +92,11 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
           },
           body: JSON.stringify({ ...contact }),
         });
+        if (!cRes.ok) throw new Error(`Failed to add contact: ${contact.name}`);
       }
 
       if (setupData.hospitalPhone) {
-        await fetch("/api/v1/contacts", {
+        const hRes = await fetch("/api/v1/contacts", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -97,11 +111,13 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
             priority: 1,
           }),
         });
+        if (!hRes.ok) throw new Error("Failed to add hospital contact");
       }
     } catch (err) {
-      setErrorMsg(String(err));
+      const msg = err instanceof Error ? err.message : "Registration failed";
+      setErrorMsg(msg);
       setStatus("error");
-      warn("Device registration failed", { error: String(err) });
+      warn("Device registration failed", { error: msg });
     }
   };
 
@@ -152,7 +168,7 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
         <CardTitle>{t.step5}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {status === "idle" && (
+        {status === "idle" && !deviceId && (
           <Button
             className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600"
             onClick={() => setStatus("registering")}
@@ -175,8 +191,7 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
             </Button>
           </>
         )}
-        {(status === "idle" && deviceId) || status === "testing" ? null : null}
-        {deviceId && secret && (status === "registering" || status === "testing" || status === "done") && (
+        {deviceId && secret && (
           <>
             <Alert className="bg-orange-50 border-orange-200">
               <AlertDescription>
@@ -203,13 +218,15 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
               </AlertDescription>
             </Alert>
 
-            <Button
-              className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600"
-              onClick={sendTestAlert}
-              disabled={status === "testing"}
-            >
-              {status === "testing" ? t.testSending : t.testAlert}
-            </Button>
+            {status !== "done" && (
+              <Button
+                className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600"
+                onClick={sendTestAlert}
+                disabled={status === "testing"}
+              >
+                {status === "testing" ? t.testSending : t.testAlert}
+              </Button>
+            )}
           </>
         )}
 

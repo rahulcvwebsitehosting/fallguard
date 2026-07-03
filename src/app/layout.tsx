@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   title: "FallGuard — Elderly Fall Detection & Emergency Response",
   description: "AI-powered fall detection using an old Android phone. Auto-alerts family and hospitals via SMS and WhatsApp.",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
 };
 
 export const viewport: Viewport = {

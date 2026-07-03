@@ -5,9 +5,14 @@
   "display": "fullscreen",
   "orientation": "landscape",
   "start_url": "/sentinel",
-  "theme_color": "#166534",
-  "background_color": "#000000",
+  "theme_color": "#E8751A",
+  "background_color": "#FFFBF0",
   "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",

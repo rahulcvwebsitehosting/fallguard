@@ -66,7 +66,12 @@ export default function SentinelContent() {
       {monitor.state === MonitoringState.IDLE && !monitor.camera.error && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-gradient-to-t from-black/80 via-black/50 to-transparent">
           <div className="rounded-xl border border-orange-500/30 bg-gradient-to-br from-orange-900/80 to-teal-900/80 px-6 py-4 text-center backdrop-blur-sm">
-            <div className="mb-2 text-2xl">🪔</div>
+            <div className="mb-2">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
             <p className="text-lg text-white font-semibold">Starting camera...</p>
             <p className="mt-1 text-xs text-orange-200">FallGuard is initializing</p>
           </div>

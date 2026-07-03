@@ -24,8 +24,11 @@ export default function Home() {
         </div>
 
         <div className="relative z-10">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/10 ring-2 ring-yellow-300/50 backdrop-blur-sm">
-            <span className="text-3xl">🪔</span>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/10 ring-2 ring-teal-300/50 backdrop-blur-sm">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
           </div>
           <h1 className="font-heading text-6xl font-black tracking-tight drop-shadow-lg">
             FallGuard

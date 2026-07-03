@@ -172,8 +172,12 @@ export default function Home() {
           <div className="grid gap-6 sm:grid-cols-3">
             <div className="group relative overflow-hidden rounded-xl border border-orange-100 bg-white p-5 text-center transition hover:border-orange-200 hover:shadow-md hover:shadow-orange-100/50">
               <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-orange-50 transition group-hover:bg-orange-100" />
-              <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-lg font-bold text-white shadow-sm">
-                <span>१</span>
+              <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 shadow-sm">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="3" />
+                  <line x1="12" y1="18" x2="12" y2="18" strokeWidth="2.5" />
+                  <path d="M9 2v2M15 2v2" />
+                </svg>
               </div>
               <h3 className="font-heading mt-4 font-semibold text-gray-900">Setup</h3>
               <p className="mt-1 text-sm text-gray-500 leading-relaxed">
@@ -182,8 +186,11 @@ export default function Home() {
             </div>
             <div className="group relative overflow-hidden rounded-xl border border-teal-100 bg-white p-5 text-center transition hover:border-teal-200 hover:shadow-md hover:shadow-teal-100/50">
               <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-50 transition group-hover:bg-teal-100" />
-              <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-600 text-lg font-bold text-white shadow-sm">
-                <span>२</span>
+              <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-600 shadow-sm">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                  <circle cx="12" cy="13" r="3" />
+                </svg>
               </div>
               <h3 className="font-heading mt-4 font-semibold text-gray-900">Monitor</h3>
               <p className="mt-1 text-sm text-gray-500 leading-relaxed">
@@ -192,8 +199,12 @@ export default function Home() {
             </div>
             <div className="group relative overflow-hidden rounded-xl border border-orange-100 bg-white p-5 text-center transition hover:border-orange-200 hover:shadow-md hover:shadow-orange-100/50">
               <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-orange-50 transition group-hover:bg-orange-100" />
-              <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-lg font-bold text-white shadow-sm">
-                <span>३</span>
+              <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 shadow-sm">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                  <path d="M12 2v2" />
+                </svg>
               </div>
               <h3 className="font-heading mt-4 font-semibold text-gray-900">Alert</h3>
               <p className="mt-1 text-sm text-gray-500 leading-relaxed">

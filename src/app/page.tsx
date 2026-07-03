@@ -11,41 +11,38 @@ export default function Home() {
         <div className="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-yellow-300 via-orange-400 to-transparent" />
         <div className="absolute right-0 top-0 h-full w-1.5 bg-gradient-to-b from-teal-300 via-teal-400 to-transparent" />
 
-        {/* Hero illustration — phone on shelf watching over a person */}
-        <div className="relative z-10 mb-8 flex items-end gap-4">
-          {/* Person silhouette */}
-          <div className="flex flex-col items-center">
-            <svg width="80" height="100" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
-              <circle cx="30" cy="18" r="12" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-              <path d="M10 72c0-12 8-22 20-22s20 10 20 22" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-              <line x1="30" y1="40" x2="30" y2="55" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-              <line x1="25" y1="48" x2="35" y2="48" stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
-            </svg>
-            <span className="mt-1 text-[10px] text-orange-200">Elderly at home</span>
+        {/* Hero icons — simple and clear */}
+        <div className="relative z-10 mb-8 flex items-center justify-center gap-6 sm:gap-10">
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="3" />
+                <line x1="12" y1="18" x2="12" y2="18" strokeWidth="2.5" />
+              </svg>
+            </div>
+            <span className="text-[10px] text-orange-200">Your old phone</span>
           </div>
-
-          {/* Connecting arc (wifi/signal) */}
-          <div className="flex flex-col items-center pb-10">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
-              <path d="M5 12.5a8 8 0 0 1 14 0" strokeLinecap="round" />
-              <path d="M8 15.5a5 5 0 0 1 8 0" strokeLinecap="round" />
-              <path d="M11 18.5a2 2 0 0 1 2 0" strokeLinecap="round" />
-            </svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
+            <span className="text-[10px] text-orange-200">AI safety shield</span>
           </div>
-
-          {/* Phone on stand */}
-          <div className="flex flex-col items-center">
-            <svg width="50" height="80" viewBox="0 0 40 70" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
-              <rect x="5" y="2" width="30" height="60" rx="4" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" />
-              <circle cx="20" cy="18" r="10" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.2" />
-              <circle cx="20" cy="18" r="5" fill="rgba(255,255,255,0.3)" />
-              <circle cx="20" cy="42" r="3" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
-              <rect x="12" y="32" width="16" height="2" rx="1" fill="rgba(255,255,255,0.15)" />
-              <rect x="14" y="36" width="12" height="2" rx="1" fill="rgba(255,255,255,0.15)" />
-              <line x1="20" y1="2" x2="20" y2="0" stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
-              <path d="M12 65h16l-3 4H15z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
-            </svg>
-            <span className="mt-1 text-[10px] text-orange-200">Old phone → Sentinel</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <span className="text-[10px] text-orange-200">Family alerted</span>
           </div>
         </div>
 

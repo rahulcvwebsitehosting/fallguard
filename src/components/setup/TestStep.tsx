@@ -154,7 +154,7 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
       <CardContent className="space-y-4">
         {status === "idle" && (
           <Button
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600"
             onClick={() => setStatus("registering")}
           >
             {t.complete}
@@ -178,16 +178,16 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
         {(status === "idle" && deviceId) || status === "testing" ? null : null}
         {deviceId && secret && (status === "registering" || status === "testing" || status === "done") && (
           <>
-            <Alert className="bg-yellow-50 border-yellow-300">
+            <Alert className="bg-orange-50 border-orange-200">
               <AlertDescription>
                 <strong>{t.secretWarning}</strong>
-                <div className="mt-2 font-mono text-sm break-all bg-yellow-100 p-2 rounded">
+                <div className="mt-2 font-mono text-sm break-all bg-orange-100 p-2 rounded">
                   {secret}
                 </div>
               </AlertDescription>
             </Alert>
 
-            <Alert className="bg-green-50 border-green-300">
+            <Alert className="bg-teal-50 border-teal-200">
               <AlertDescription>
                 <strong>{t.pinLabel}</strong>
                 <div className="flex items-center gap-2 mt-2">
@@ -204,7 +204,7 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
             </Alert>
 
             <Button
-              className="w-full bg-green-600 hover:bg-green-700"
+              className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600"
               onClick={sendTestAlert}
               disabled={status === "testing"}
             >
@@ -215,10 +215,10 @@ export default function TestStep({ setupData, language, onComplete }: TestStepPr
 
         {status === "done" && (
           <>
-            <Alert className="bg-green-50 border-green-300">
+            <Alert className="bg-teal-50 border-teal-200">
               <AlertDescription>{t.testSuccess}</AlertDescription>
             </Alert>
-            <Alert className="bg-blue-50 border-blue-300">
+            <Alert className="bg-orange-50 border-orange-200">
               <AlertDescription className="text-sm">{t.wakeLockInstructions}</AlertDescription>
             </Alert>
           </>

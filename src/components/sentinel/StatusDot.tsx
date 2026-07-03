@@ -15,9 +15,9 @@ function getColor(state: MonitoringStateType): string {
       return "bg-gray-400";
     case MonitoringState.CAMERA_STARTING:
     case MonitoringState.WARMING_UP:
-      return "bg-blue-500";
+      return "bg-teal-400";
     case MonitoringState.MONITORING:
-      return "bg-green-500";
+      return "bg-teal-500";
     case MonitoringState.POSSIBLE_FALL:
     case MonitoringState.VERIFYING:
       return "bg-yellow-500";
@@ -25,7 +25,7 @@ function getColor(state: MonitoringStateType): string {
     case MonitoringState.DISPATCHING:
       return "bg-red-500";
     case MonitoringState.SUCCESS:
-      return "bg-green-400";
+      return "bg-teal-400";
     case MonitoringState.COOLDOWN:
     case MonitoringState.ERROR:
       return "bg-orange-500";

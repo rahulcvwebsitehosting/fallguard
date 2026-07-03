@@ -87,16 +87,16 @@ export default function ContactsStep({ contacts, onChange, language }: ContactsS
               </div>
 
               {contact.phone && (
-                <div className="rounded-lg bg-blue-50 p-3">
-                  <p className="text-sm font-medium text-blue-800">{t.optInTitle}</p>
-                  <p className="text-xs text-blue-600 mt-1">{t.optInDesc}</p>
+                <div className="rounded-lg bg-orange-50 border border-orange-100 p-3">
+                  <p className="text-sm font-medium text-orange-800">{t.optInTitle}</p>
+                  <p className="text-xs text-orange-600 mt-1">{t.optInDesc}</p>
                   <a
                     href={`https://wa.me/${contact.phone.replace(/^\+/, "")}?text=FallGuard+Opt-In`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-2 inline-block"
                   >
-                    <Button variant="outline" size="sm" className="text-green-700 border-green-300" type="button">
+                    <Button variant="outline" size="sm" className="text-teal-700 border-teal-300" type="button">
                       {t.optInButton}
                     </Button>
                   </a>

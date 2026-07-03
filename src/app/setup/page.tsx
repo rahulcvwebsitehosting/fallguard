@@ -53,23 +53,40 @@ function SetupContent() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <div className="sticky top-0 bg-white z-10 border-b px-4 py-3">
-        <h1 className="text-xl font-bold text-gray-900">{t.title}</h1>
-        <p className="text-sm text-gray-500">{t.subtitle}</p>
-        <Progress value={(step / TOTAL_STEPS) * 100} className="mt-3 h-2" />
-        <div className="mt-2 flex gap-2 text-xs text-gray-500">
-          {Array.from({ length: TOTAL_STEPS }, (_, i) => (
-            <span
-              key={i}
-              className={`flex-1 text-center rounded py-1 ${
-                i + 1 === step ? "bg-green-600 text-white font-bold" : i + 1 < step ? "bg-green-100 text-green-800" : "bg-gray-100"
-              }`}
-            >
-              {translations[language].setup[`step${i + 1}` as keyof typeof t]}
-            </span>
-          ))}
+    <div className="flex min-h-screen flex-col">
+      {/* Header */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-orange-700 via-orange-600 to-teal-800 px-4 py-5 text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle,_rgba(255,255,255,0.06)_1px,_transparent_1px)] bg-[length:20px_20px]" />
+        <div className="relative z-10">
+          <h1 className="text-2xl font-bold">{t.title}</h1>
+          <p className="mt-1 text-sm text-orange-100">
+            {language === "ta"
+              ? "உங்கள் FallGuard சாதனத்தை 5 எளிய படிகளில் அமைக்கவும். ஒரு பழைய Android தொலைபேசியை பாதுகாப்பு கண்காணிப்பாளராக மாற்றுகிறது."
+              : "Configure your FallGuard sentinel in 5 simple steps. Transform an old Android phone into a life-saving safety monitor."}
+          </p>
+          <Progress value={(step / TOTAL_STEPS) * 100} className="mt-4 h-2 bg-white/20 [&>div]:bg-yellow-300" />
+          <div className="mt-3 flex gap-2 text-xs">
+            {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+              <span
+                key={i}
+                className={`flex-1 text-center rounded py-1 ${
+                  i + 1 === step ? "bg-white text-orange-800 font-bold" : i + 1 < step ? "bg-orange-500/40 text-white" : "bg-white/20 text-orange-100"
+                }`}
+              >
+                {i + 1}. {translations[language].setup[`step${i + 1}` as keyof typeof t]}
+              </span>
+            ))}
+          </div>
         </div>
+      </div>
+
+      {/* Step Hint */}
+      <div className="border-b border-orange-100 bg-gradient-to-r from-orange-50 to-teal-50 px-4 py-2 text-xs text-orange-700">
+        {step === 1 && (language === "ta" ? "உங்கள் சாதனத்திற்கு ஒரு பெயர் கொடுங்கள். இது குடும்ப டாஷ்போர்டில் காண்பிக்கப்படும்." : "Give your device a name. This will show on the family dashboard so you can identify which room this monitor covers.")}
+        {step === 2 && (language === "ta" ? "அவசர தொடர்புகளைச் சேர்க்கவும். வீழ்ச்சி கண்டறியப்பட்டால் இவர்களுக்கு SMS மற்றும் WhatsApp மூலம் எச்சரிக்கை அனுப்பப்படும்." : "Add emergency contacts. These people will receive SMS and WhatsApp alerts when a fall is detected.")}
+        {step === 3 && (language === "ta" ? "அருகிலுள்ள மருத்துவமனையின் தொலைபேசி எண்ணைச் சேர்க்கவும். இது அவசர அழைப்பு பொத்தானுக்கு பயன்படும்." : "Add a hospital phone number. This will power the one-tap emergency call button on the dashboard.")}
+        {step === 4 && (language === "ta" ? "உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும். எச்சரிக்கைகள் மற்றும் குரல் அறிவிப்புகள் இந்த மொழியில் இருக்கும்." : "Choose your preferred language. Alerts and voice announcements will use this language.")}
+        {step === 5 && (language === "ta" ? "எல்லாம் சரியாக வேலை செய்கிறதா என்று சோதிக்க ஒரு சோதனை எச்சரிக்கையை அனுப்பவும். பின்னர் கண்காணிப்பைத் தொடங்கவும்." : "Send a test alert to confirm everything works. Then start monitoring.")}
       </div>
 
       <div className="flex-1 px-4 py-6">
@@ -118,25 +135,25 @@ function SetupContent() {
         )}
       </div>
 
-      <div className="sticky bottom-0 border-t bg-white px-4 py-3 flex gap-3">
+      <div className="sticky bottom-0 border-t border-orange-100 bg-white px-4 py-3 flex gap-3">
         {step > 1 && (
           <Button variant="outline" onClick={() => setStep(step - 1)}>
-            Back
+            {language === "ta" ? "பின்" : "Back"}
           </Button>
         )}
         <div className="flex-1" />
         {step < TOTAL_STEPS && (
           <Button
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600"
             disabled={!canNext()}
             onClick={() => setStep(step + 1)}
           >
-            Next
+            {language === "ta" ? "அடுத்து" : "Next"}
           </Button>
         )}
         {step === TOTAL_STEPS && deviceId && secret && (
           <Button
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600"
             onClick={() => {
               router.push(`/sentinel?deviceId=${deviceId}&secret=${secret}&name=${encodeURIComponent(data.nickname)}&lang=${data.language}`);
             }}

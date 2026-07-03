@@ -47,14 +47,14 @@ export default function StatusCard({ deviceId, language }: StatusCardProps) {
   }, [deviceId]);
 
   const isAllClear = !latestEvent || latestEvent.cancelled || (!latestEvent.alertSent && latestEvent.geminiClassification !== "FALLEN");
-  const bgColor = isAllClear ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300";
-  const textColor = isAllClear ? "text-green-800" : "text-red-800";
+  const bgColor = isAllClear ? "bg-gradient-to-br from-teal-50 to-white border-teal-200" : "bg-gradient-to-br from-red-50 to-orange-50 border-red-300";
+  const textColor = isAllClear ? "text-teal-800" : "text-red-800";
 
   return (
     <Card className={`${bgColor}`}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <span className={`h-3 w-3 rounded-full ${isAllClear ? "bg-green-500 animate-pulse" : "bg-red-500 animate-pulse"}`} />
+          <span className={`h-3 w-3 rounded-full ${isAllClear ? "bg-teal-500 animate-pulse" : "bg-red-500 animate-pulse"}`} />
           <span className={textColor}>
             {isAllClear ? t.statusAllClear : t.statusFallDetected}
           </span>

@@ -14,9 +14,9 @@ interface TimelineProps {
 }
 
 const BORDER_COLORS: Record<string, string> = {
-  cancelled: "border-l-green-500",
+  cancelled: "border-l-teal-500",
   sent: "border-l-red-500",
-  pending: "border-l-gray-400",
+  pending: "border-l-orange-400",
 };
 
 const LABEL_EN: Record<string, string> = {

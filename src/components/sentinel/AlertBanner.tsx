@@ -30,7 +30,9 @@ export default function AlertBanner({ state, language }: AlertBannerProps) {
   return (
     <div
       className={`absolute top-4 left-1/2 z-20 -translate-x-1/2 rounded-full px-5 py-1.5 text-lg font-semibold shadow-lg ${
-        isAlert ? "bg-red-600 text-white animate-pulse" : "bg-black/40 text-white"
+        isAlert
+          ? "bg-gradient-to-r from-red-700 to-maroon-700 text-white animate-pulse border border-red-400/30"
+          : "bg-gradient-to-r from-orange-900/70 to-teal-900/70 text-white backdrop-blur-sm border border-white/10"
       }`}
     >
       {display}

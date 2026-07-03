@@ -15,10 +15,17 @@ if (!global.mongooseCache) {
   global.mongooseCache = cached;
 }
 
+export class MongoNotConfiguredError extends Error {
+  constructor() {
+    super("MONGODB_URI environment variable is not defined. Please set it in .env.local or Vercel environment variables.");
+    this.name = "MongoNotConfiguredError";
+  }
+}
+
 async function dbConnect(): Promise<typeof mongoose> {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
-    throw new Error("MONGODB_URI environment variable is not defined");
+    throw new MongoNotConfiguredError();
   }
   if (cached.conn) {
     return cached.conn;

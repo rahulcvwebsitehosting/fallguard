@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import dbConnect from "@/lib/db";
+import dbConnect, { MongoNotConfiguredError } from "@/lib/db";
 import FallEvent from "@/models/FallEvent";
 import Contact from "@/models/Contact";
 import Device from "@/models/Device";
@@ -155,6 +155,9 @@ export async function POST(req: NextRequest) {
       alertSent: event.alertSent,
     });
   } catch (err) {
+    if (err instanceof MongoNotConfiguredError) {
+      return NextResponse.json({ error: "Database not configured. Set MONGODB_URI in .env.local or Vercel environment variables." }, { status: 503 });
+    }
     logError("Alert dispatch failed", { error: String(err) });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

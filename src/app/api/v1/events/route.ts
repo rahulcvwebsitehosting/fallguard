@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import dbConnect from "@/lib/db";
+import dbConnect, { MongoNotConfiguredError } from "@/lib/db";
 import FallEvent from "@/models/FallEvent";
 import { verifyDeviceSecret, extractDeviceAuth } from "@/lib/device-auth";
 import { error as logError } from "@/lib/logger";
@@ -54,6 +54,9 @@ export async function GET(req: NextRequest) {
     const events = await FallEvent.find(query).sort({ timestamp: -1 }).limit(50);
     return NextResponse.json(events);
   } catch (err) {
+    if (err instanceof MongoNotConfiguredError) {
+      return NextResponse.json({ error: "Database not configured. Set MONGODB_URI in .env.local or Vercel environment variables." }, { status: 503 });
+    }
     logError("Failed to get events", { error: String(err) });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
@@ -87,6 +90,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(event, { status: 201 });
   } catch (err) {
+    if (err instanceof MongoNotConfiguredError) {
+      return NextResponse.json({ error: "Database not configured. Set MONGODB_URI in .env.local or Vercel environment variables." }, { status: 503 });
+    }
     logError("Failed to log event", { error: String(err) });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/db";
+import dbConnect, { MongoNotConfiguredError } from "@/lib/db";
 import Device from "@/models/Device";
 import { verifyDeviceSecret, extractDeviceAuth } from "@/lib/device-auth";
 import { info, error as logError } from "@/lib/logger";
@@ -15,7 +15,6 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Invalid device credentials" }, { status: 401 });
     }
 
-    await dbConnect();
     const body = await req.json().catch(() => ({}));
 
     const update: Record<string, unknown> = {};
@@ -37,6 +36,9 @@ export async function PUT(req: NextRequest) {
     info("Device config updated", { deviceId: auth.deviceId });
     return NextResponse.json({ success: true });
   } catch (err) {
+    if (err instanceof MongoNotConfiguredError) {
+      return NextResponse.json({ error: "Database not configured. Set MONGODB_URI in .env.local or Vercel environment variables." }, { status: 503 });
+    }
     logError("Device update failed", { error: String(err) });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

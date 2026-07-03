@@ -1,5 +1,5 @@
 import bcryptjs from "bcryptjs";
-import dbConnect from "@/lib/db";
+import dbConnect, { MongoNotConfiguredError } from "@/lib/db";
 import Device from "@/models/Device";
 import { warn, error as logError } from "@/lib/logger";
 
@@ -21,6 +21,9 @@ export async function verifyDeviceSecret(
     }
     return { valid: true, device };
   } catch (err) {
+    if (err instanceof MongoNotConfiguredError) {
+      throw err;
+    }
     logError("Device auth verification failed", { deviceId, error: String(err) });
     return { valid: false };
   }

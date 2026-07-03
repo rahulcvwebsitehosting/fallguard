@@ -32,50 +32,57 @@ export default function HospitalStep({ value, onChange, language }: HospitalStep
     setSearching(true);
     setError("");
     setResults([]);
+
     try {
       const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
         if (!("geolocation" in navigator)) {
-          reject(new Error("No geolocation"));
+          reject(new Error("Geolocation not supported by this browser"));
           return;
         }
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
+        const opts: PositionOptions = {
           enableHighAccuracy: false,
           timeout: GEOCODE_TIMEOUT_MS,
-          maximumAge: 60000,
-        });
+          maximumAge: 120000,
+        };
+        navigator.geolocation.getCurrentPosition(resolve, reject, opts);
       });
 
       const { latitude, longitude } = pos.coords;
 
-      const query = `
-        [out:json];
-        (
-          node["amenity"="hospital"](around:5000,${latitude},${longitude});
-          way["amenity"="hospital"](around:5000,${latitude},${longitude});
-        );
-        out center 10;
-      `;
-
-      const res = await fetch("https://overpass-api.de/api/interpreter", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `data=${encodeURIComponent(query)}`,
-        signal: AbortSignal.timeout(15000),
+      // Use Nominatim search for hospitals near coordinates
+      // Nominatim supports CORS and structured amenity searches
+      const params = new URLSearchParams({
+        q: `hospital`,
+        format: "jsonv2",
+        addressdetails: "1",
+        limit: "10",
+        viewbox: `${longitude - 0.15},${latitude - 0.15},${longitude + 0.15},${latitude + 0.15}`,
+        bounded: "1",
       });
 
-      if (!res.ok) throw new Error("Search failed");
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+        headers: {
+          "Accept": "application/json",
+          "User-Agent": "FallGuard/0.1 (elderly fall detection app; local setup)",
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!res.ok) throw new Error(`Search failed (HTTP ${res.status})`);
 
       const data = await res.json();
-      const hospitals: HospitalResult[] = (data.elements || [])
-        .filter((el: any) => el.tags && el.tags.name)
+      const hospitals: HospitalResult[] = (data || [])
+        .filter((el: any) => el.display_name)
         .map((el: any) => {
-          const lat = el.lat || el.center?.lat || 0;
-          const lon = el.lon || el.center?.lon || 0;
-          const d = haversine(latitude, longitude, lat, lon);
+          const d = haversine(latitude, longitude, parseFloat(el.lat), parseFloat(el.lon));
+          const addr = el.address || {};
+          const road = addr.road || addr.street || "";
+          const city = addr.city || addr.town || addr.village || addr.county || "";
+          const addressParts = [el.display_name?.split(",").slice(0, 3).join(","), road, city].filter(Boolean);
           return {
-            name: el.tags.name,
-            phone: el.tags.phone || el.tags["contact:phone"] || "",
-            address: el.tags["addr:full"] || [el.tags["addr:street"], el.tags["addr:city"]].filter(Boolean).join(", ") || "",
+            name: el.name || addr.hospital || addr.amenity || (addr.road ? `Hospital on ${addr.road}` : "Hospital"),
+            phone: el.extratags?.phone || el.extratags?.["contact:phone"] || "",
+            address: addressParts[0] || el.display_name || "",
             distance: d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(1)}km`,
           };
         })
@@ -87,8 +94,27 @@ export default function HospitalStep({ value, onChange, language }: HospitalStep
         setResults(hospitals);
       }
     } catch (err) {
+      let msg = "";
+      const raw = String(err);
+
+      if (raw.includes("User denied") || raw.includes("PERMISSION_DENIED")) {
+        msg = language === "ta"
+          ? "இருப்பிட அனுமதி மறுக்கப்பட்டது. உலாவி அமைப்புகளில் இருப்பிடத்தை அனுமதிக்கவும்."
+          : "Location permission denied. Allow location access in browser settings.";
+      } else if (raw.includes("POSITION_UNAVAILABLE") || raw.includes("Timeout")) {
+        msg = language === "ta"
+          ? "இருப்பிடம் கிடைக்கவில்லை. GPS சமிக்ஞையைச் சரிபார்க்கவும்."
+          : "Location unavailable. Check GPS signal and try again.";
+      } else if (raw.includes("not supported")) {
+        msg = language === "ta"
+          ? "உங்கள் உலாவி இருப்பிடத்தை ஆதரிக்கவில்லை."
+          : "Your browser does not support geolocation.";
+      } else {
+        msg = language === "ta" ? "தேடல் தோல்வி. கைமுறையாக உள்ளிடவும்." : "Search failed. Enter manually below.";
+      }
+
+      setError(msg);
       warn("Hospital search failed", { error: String(err) });
-      setError(language === "ta" ? "தேடல் தோல்வி. கைமுறையாக உள்ளிடவும்." : "Search failed. Enter manually below.");
     } finally {
       setSearching(false);
     }
@@ -104,7 +130,9 @@ export default function HospitalStep({ value, onChange, language }: HospitalStep
           {searching ? (language === "ta" ? "தேடுகிறது..." : "Searching...") : t.hospitalSearch}
         </Button>
 
-        {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+        {error && (
+          <p className="text-xs text-red-500 text-center leading-relaxed">{error}</p>
+        )}
 
         {results.length > 0 && (
           <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -123,7 +151,13 @@ export default function HospitalStep({ value, onChange, language }: HospitalStep
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">{h.name}</p>
                     {h.address && <p className="text-xs text-gray-500 truncate">{h.address}</p>}
-                    {h.phone && <p className="text-xs text-teal-600 font-medium mt-0.5">{h.phone}</p>}
+                    {h.phone ? (
+                      <p className="text-xs text-teal-600 font-medium mt-0.5">{h.phone}</p>
+                    ) : (
+                      <p className="text-xs text-gray-400 italic mt-0.5">
+                        {language === "ta" ? "தொலைபேசி எண் இல்லை — கைமுறையாக உள்ளிடவும்" : "No phone listed — enter manually"}
+                      </p>
+                    )}
                   </div>
                   <span className="shrink-0 text-xs text-gray-400">{h.distance}</span>
                 </div>
